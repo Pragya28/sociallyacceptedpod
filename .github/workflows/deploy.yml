@@ -1,1 +1,45 @@
+name: Deploy App
 
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "main" # Default to the 'main' branch, but can be changed during manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code from the specified branch
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }} # Fetch the branch specified by input
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18" # Adjust to your Node.js version
+
+      # Step 3: Install dependencies using pnpm
+      - name: Install dependencies
+        run: |
+          curl -fsSL https://get.pnpm.io/install.sh | sh -
+          pnpm install
+
+      # Step 4: Build the Nx app (production build)
+      - name: Build the sapod web app
+        run: pnpm nx build sapod-web
+
+      # Step 5: Deploy to Hostinger
+      - name: Deploy to Hostinger
+        env:
+          HOSTINGER_SFTP_HOST: ${{ secrets.HOSTINGER_SFTP_HOST }}
+          HOSTINGER_SFTP_USER: ${{ secrets.HOSTINGER_SFTP_USER }}
+          HOSTINGER_SFTP_PASSWORD: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
+        run: |
+          curl -T ./dist/apps/sapod-web/* -u $HOSTINGER_SFTP_USER:$HOSTINGER_SFTP_PASSWORD sftp://$HOSTINGER_SFTP_HOST/your/path/to/public_html/
