@@ -32,17 +32,4 @@ jobs:
           HOSTINGER_SFTP_USER: ${{ secrets.HOSTINGER_SFTP_USER }}
           HOSTINGER_SFTP_PASSWORD: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
         run: |
-          # Create a temporary script for deployment
-          echo "
-          mirror -R ./dist/apps/sapod-web/ /public_html/
-          bye
-          " > deploy.txt
-
-          # Use lftp for more reliable SFTP transfer
-          sudo apt-get install -y lftp
-          lftp -e "set sftp:auto-confirm yes" \
-               -u "$HOSTINGER_SFTP_USER","$HOSTINGER_SFTP_PASSWORD" \
-               sftp://"$HOSTINGER_SFTP_HOST" \
-               -f deploy.txt
-
-          rm deploy.txt
+          curl -T ./dist/apps/sapod-web/* -u $HOSTINGER_SFTP_USER:$HOSTINGER_SFTP_PASSWORD sftp://$HOSTINGER_SFTP_HOST/your/path/to/public_html/
