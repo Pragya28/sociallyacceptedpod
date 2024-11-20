@@ -1,38 +1,40 @@
 name: Deploy App
 
 on:
-  push:
-    branches:
-      - main # This will trigger the workflow when changes are pushed to the 'main' branch
+  workflow_dispatch: # Manual trigger without inputs
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code from the specified branch
+      # Step 1: Checkout the code from the specified branch (main)
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.inputs.branch }} # Fetch the branch specified by input
+          ref: "main"
 
       # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18" # Adjust to your Node.js version
+          node-version: "18"
 
-      # Step 3: Install dependencies using pnpm
-      - name: Install dependencies
+      # Step 3: Install pnpm with shell fix
+      - name: Install pnpm
         run: |
+          export SHELL=/bin/bash  # Set the shell to bash explicitly
           curl -fsSL https://get.pnpm.io/install.sh | sh -
-          pnpm install
 
-      # Step 4: Build the Nx app (production build)
+      # Step 4: Install dependencies using pnpm
+      - name: Install dependencies
+        run: pnpm install
+
+      # Step 5: Build the Nx app (production build)
       - name: Build the sapod web app
         run: pnpm nx build sapod-web
 
-      # Step 5: Deploy to Hostinger
+      # Step 6: Deploy to Hostinger
       - name: Deploy to Hostinger
         env:
           HOSTINGER_SFTP_HOST: ${{ secrets.HOSTINGER_SFTP_HOST }}
