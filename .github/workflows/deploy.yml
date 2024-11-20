@@ -1,12 +1,9 @@
 name: Deploy App
 
 on:
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to deploy"
-        required: true
-        default: "main" # Default to the 'main' branch, but can be changed during manual trigger
+  push:
+    branches:
+      - main # This will trigger the workflow when changes are pushed to the 'main' branch
 
 jobs:
   deploy:
