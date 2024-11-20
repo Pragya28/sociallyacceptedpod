@@ -8,38 +8,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code from the specified branch (main)
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: 'main'
+        uses: actions/checkout@v4
 
-      # Step 2: Install pnpm
-      - name: Install pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 9.4.0
 
-      # Step 3: Set up Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
 
-      # Step 4: Install dependencies using pnpm
       - name: Install dependencies
         run: pnpm install
 
-      # Step 5: Build the Nx app (production build)
-      - name: Build the sapod web app
+      - name: Build application
         run: pnpm nx build sapod-web
 
-      # Step 6: Deploy to Hostinger
       - name: Deploy to Hostinger
         env:
           HOSTINGER_SFTP_HOST: ${{ secrets.HOSTINGER_SFTP_HOST }}
           HOSTINGER_SFTP_USER: ${{ secrets.HOSTINGER_SFTP_USER }}
           HOSTINGER_SFTP_PASSWORD: ${{ secrets.HOSTINGER_SFTP_PASSWORD }}
         run: |
-          curl -T ./dist/apps/sapod-web/* -u $HOSTINGER_SFTP_USER:$HOSTINGER_SFTP_PASSWORD sftp://$HOSTINGER_SFTP_HOST/your/path/to/public_html/
+          # Create a temporary script for deployment
+          echo "
+          mirror -R ./dist/apps/sapod-web/ /public_html/
+          bye
+          " > deploy.txt
+
+          # Use lftp for more reliable SFTP transfer
+          sudo apt-get install -y lftp
+          lftp -e "set sftp:auto-confirm yes" \
+               -u "$HOSTINGER_SFTP_USER","$HOSTINGER_SFTP_PASSWORD" \
+               sftp://"$HOSTINGER_SFTP_HOST" \
+               -f deploy.txt
+
+          rm deploy.txt
