@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@sapod/components",
+    "utils": "@sapod/utils",
+    "ui": "@sapod/ui",
+    "lib": "@sapod/lib",
+    "hooks": "@sapod/hooks"
+  },
+  "iconLibrary": "lucide"
+}
