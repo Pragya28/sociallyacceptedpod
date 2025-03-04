@@ -13,7 +13,7 @@
   "aliases": {
     "components": "@sapod/components",
     "utils": "@sapod/lib/utils",
-    "ui": "@sapod/components/ui",
+    "ui": "@sapod/ui",
     "lib": "@sapod/lib",
     "hooks": "@sapod/hooks"
   },
