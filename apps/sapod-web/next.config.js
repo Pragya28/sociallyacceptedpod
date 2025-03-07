@@ -12,6 +12,10 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+  output: 'export', // Important for static export
+  images: {
+    unoptimized: true, // Required for static export
+  },
 };
 
 const plugins = [
