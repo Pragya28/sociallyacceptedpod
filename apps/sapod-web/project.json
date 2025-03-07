@@ -1,0 +1,35 @@
+{
+  "name": "sapod-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/sapod-web",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "port": 3000,
+        "buildTarget": "sapod-web:build"
+      }
+    },
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/sapod-web"
+      },
+      "configurations": {
+        "production": {
+          "dev": false
+        }
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "scp -P 65002 -r dist/apps/sapod-web/.next/* dist/apps/sapod-web/public/* u801979111@147.93.109.16:/home/u801979111/domains/sociallyacceptedpod.com/public_html"
+      },
+      "dependsOn": ["build"]
+    }
+  }
+}
